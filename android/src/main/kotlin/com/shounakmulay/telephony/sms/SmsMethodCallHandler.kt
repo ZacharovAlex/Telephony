@@ -355,13 +355,16 @@ class SmsMethodCallHandler(
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
+    if (requestCode != this.requestCode) {
+      return false
+    }
 
+    if (!this::action.isInitialized) {
+      return false
+    }
     permissionsController.isRequestingPermission = false
 
     val deniedPermissions = mutableListOf<String>()
-    if (requestCode != this.requestCode && !this::action.isInitialized) {
-      return false
-    }
 
     val allPermissionGranted = grantResults.foldIndexed(true) { i, acc, result ->
       if (result == PackageManager.PERMISSION_DENIED) {
